@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 export class Node<T>{
   val: T;
@@ -18,7 +19,8 @@ export class Graph {
   }
 
   buildList(head: Node<string | number> = this.head, margin: number=0){
-    this.domList.push(<li style={{marginLeft: margin}}>{head.val as string}</li>)
+    const key = uuidv4();
+    this.domList.push(<li style={{marginLeft: margin}} key={key}>{head.val as string}</li>)
     if(!head.children.length) return
     for(const child of head.children){
        this.buildList(child, margin+24)
@@ -32,8 +34,10 @@ export class Graph {
     const keys: string[] = Object.keys(json_object);
     if(!head){
       head = new Node(keys[0])
+      head.children = keys.slice(0).map(el => new Node(el))
+    } else {
+      head.children = keys.map(el => new Node(el));
     }
-    head.children = keys.map(el => new Node(el));
     for(const child of head.children){
       if(json_object[child.val] instanceof Array){
         for(const el of json_object[child.val] as Array<string | unknown>){
@@ -46,6 +50,7 @@ export class Graph {
         recursiveBuild(json_object[child.val] as Record<string, unknown>, child)
         } 
       }
+      console.log(head)
       return head;
     }
 

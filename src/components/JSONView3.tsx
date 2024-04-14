@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 export default function JSONView( { json_str }: {json_str: string}){
 
   const [domList, setDomList] = useState([<></>])
-
-  
   
   useEffect(() => {
     try {
