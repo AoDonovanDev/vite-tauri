@@ -31,7 +31,6 @@ export class Graph {
 
     function recursiveBuild(this: Graph, json_object: Record<string, unknown>, head: Node<string | number> | null): Node<string | number>{
 
-      if(!json_object) return new Node('none');
       const keys: string[] = Object.keys(json_object);
       if(!head){
         head = new Node("head");
