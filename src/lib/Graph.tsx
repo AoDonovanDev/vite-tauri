@@ -34,26 +34,18 @@ export class Graph {
       const keys: string[] = Object.keys(json_object);
       if(!head){
         head = new Node("head");
-        head.children = keys.map(el => new Node(el));
-      } else {
-        head.children = keys.map(el => new Node(el));
-      }
+      } 
+      head.children = keys.map(el => new Node(el));
       for(const child of head.children){
-        if(json_object[child.val] instanceof Array){
-          //special rule for if the child is a 1 length array containing a string or number
-          if( ((json_object[child.val] as Array<string | unknown>).length === 1) && (typeof (json_object[child.val] as Array<string | number>)[0] === "string" || typeof (json_object[child.val] as Array<string | number>)[0] === "number")) {
-            console.log("its fuckin happening**************************************************************")
-            this.terminate(json_object[child.val], child)
-          } else {
-              for(const el of json_object[child.val] as Array<string | unknown>){
-                recursiveBuild.call(this, el as Record<string, unknown>, child);
-            }
-          }
-        } else if(typeof json_object[child.val] === "string" || typeof json_object[child.val] === "number"){
+        if(this.isExitCondition(json_object, child)) {
           this.terminate(json_object[child.val], child)
-        } else {
-          recursiveBuild.call(this, json_object[child.val] as Record<string, unknown>, child);
-          } 
+          } else if(json_object[child.val] instanceof Array){
+            for(const el of json_object[child.val] as Array<string | unknown>){
+              recursiveBuild.call(this, el as Record<string, unknown>, child);
+            }
+          } else {
+            recursiveBuild.call(this, json_object[child.val] as Record<string, unknown>, child);
+            } 
         }
       console.log(head);
       return head;
@@ -66,6 +58,16 @@ export class Graph {
     const concrete = typeof val === "string" ? val as string : val as number;
     const lastChild = new Node(concrete);
     child.children.push(lastChild);
+  }
+
+  isExitCondition(json_object: Record<string, unknown>, child: Node<string | number>): boolean{
+    return  (typeof (json_object[child.val] as Array<string | number>)[0] === "string" ||
+            typeof (json_object[child.val] as Array<string | number>)[0] === "number") ||
+
+            ((json_object[child.val] as Array<string | unknown>).length === 1) && 
+            (typeof (json_object[child.val] as Array<string | number>)[0] === "string" || 
+            typeof (json_object[child.val] as Array<string | number>)[0] === "number")
+   
   }
 
 }
